@@ -32,13 +32,11 @@ def detalle_curso(request, curso_id: int):
 def carrito(request):
     return render(request, "carrito.html")
 
-# ---------- Auth ----------
 def login_view(request):
     if request.method == "POST":
         form = AuthenticationForm(request, data=request.POST)
         if form.is_valid():
-            user = form.get_user()
-            login(request, user)
+            login(request, form.get_user())
             return redirect("index")
         messages.error(request, "Credenciales inválidas.")
     else:
@@ -62,14 +60,13 @@ def registro_view(request):
     return render(request, "registro.html", {"form": form})
 
 def recuperar_view(request):
-    # placeholder: pantalla informativa
     return render(request, "recuperar.html")
 
 @login_required
 def perfil(request):
     return render(request, "perfil.html")
 
-def es_estudiante(user: User):  # placeholder simple por rol
+def es_estudiante(user: User):
     return not user.is_staff
 
 def es_instructor(user: User):

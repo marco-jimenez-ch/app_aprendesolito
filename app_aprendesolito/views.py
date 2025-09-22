@@ -1,14 +1,12 @@
-from django.shortcuts import render
-
-# Create your views here.
-import json
 from pathlib import Path
+import json
+
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
-from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
+from django.shortcuts import render, redirect
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -29,6 +27,7 @@ def detalle_curso(request, curso_id: int):
     curso = next((c for c in cursos if c.get("id") == curso_id), None)
     return render(request, "detalle-curso.html", {"curso": curso})
 
+@login_required
 def carrito(request):
     return render(request, "carrito.html")
 
@@ -43,6 +42,7 @@ def login_view(request):
         form = AuthenticationForm()
     return render(request, "login.html", {"form": form})
 
+@login_required
 def logout_view(request):
     logout(request)
     return redirect("index")
@@ -67,10 +67,10 @@ def perfil(request):
     return render(request, "perfil.html")
 
 def es_estudiante(user: User):
-    return not user.is_staff
+    return user.is_authenticated and not user.is_staff
 
 def es_instructor(user: User):
-    return user.is_staff
+    return user.is_authenticated and user.is_staff
 
 @login_required
 @user_passes_test(es_estudiante)

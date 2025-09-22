@@ -7,6 +7,11 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from django.contrib.auth.models import User
 from django.shortcuts import render, redirect
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
+from django.urls import reverse_lazy
+
+from .models import Curso
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -32,15 +37,16 @@ def carrito(request):
     return render(request, "carrito.html")
 
 def login_view(request):
+    next_url = request.GET.get("next") or request.POST.get("next")
     if request.method == "POST":
         form = AuthenticationForm(request, data=request.POST)
         if form.is_valid():
             login(request, form.get_user())
-            return redirect("index")
+            return redirect(next_url or "index")
         messages.error(request, "Credenciales inválidas.")
     else:
         form = AuthenticationForm()
-    return render(request, "login.html", {"form": form})
+    return render(request, "login.html", {"form": form, "next": next_url})
 
 @login_required
 def logout_view(request):
@@ -84,3 +90,36 @@ def panel_instructor(request):
 
 def exito(request):
     return render(request, "exito.html")
+
+class SoloStaff(UserPassesTestMixin):
+    def test_func(self):
+        return self.request.user.is_staff
+
+class CursoList(LoginRequiredMixin, ListView):
+    model = Curso
+    template_name = "cursos_list.html"
+    paginate_by = 10
+
+class CursoDetail(LoginRequiredMixin, DetailView):
+    model = Curso
+    template_name = "cursos_detail.html"
+
+class CursoCreate(LoginRequiredMixin, SoloStaff, CreateView):
+    model = Curso
+    fields = ["codigo", "nombre", "descripcion", "cupos", "activo"]
+    template_name = "cursos_form.html"
+    success_url = reverse_lazy("cursos_list")
+    def form_valid(self, form):
+        form.instance.creado_por = self.request.user
+        return super().form_valid(form)
+
+class CursoUpdate(LoginRequiredMixin, SoloStaff, UpdateView):
+    model = Curso
+    fields = ["nombre", "descripcion", "cupos", "activo"]
+    template_name = "cursos_form.html"
+    success_url = reverse_lazy("cursos_list")
+
+class CursoDelete(LoginRequiredMixin, SoloStaff, DeleteView):
+    model = Curso
+    template_name = "cursos_confirm_delete.html"
+    success_url = reverse_lazy("cursos_list")

@@ -15,43 +15,31 @@
 
   <main class="container py-5" style="max-width:520px">
     <h1 class="mb-4">Iniciar sesión</h1>
-    <div id="alert-login" class="alert alert-danger d-none"></div>
-    <form id="form-login" novalidate>
+
+    {% if form.errors %}
+      <div class="alert alert-danger">Credenciales inválidas.</div>
+    {% endif %}
+
+    <form method="post" novalidate>
+      {% csrf_token %}
+      {% if next %}<input type="hidden" name="next" value="{{ next }}">{% endif %}
+
       <div class="mb-3">
-        <label for="email" class="form-label">Correo</label>
-        <input id="email" type="email" class="form-control" required>
-        <small id="err-login-email" class="text-danger error-inline"></small>
+        <label for="id_username" class="form-label">Correo o usuario</label>
+        <input type="text" name="username" id="id_username" class="form-control"
+               value="{{ form.data.username|default:'' }}" required>
       </div>
+
       <div class="mb-3">
-        <label for="password" class="form-label">Contraseña</label>
-        <input id="password" type="password" class="form-control" required>
-        <small id="err-login-pass" class="text-danger error-inline"></small>
+        <label for="id_password" class="form-label">Contraseña</label>
+        <input type="password" name="password" id="id_password" class="form-control" required>
       </div>
+
       <button class="btn btn-primary" type="submit">Entrar</button>
       <a class="btn btn-link" href="{% url 'recuperar' %}">¿Olvidaste tu contraseña?</a>
     </form>
   </main>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-  <script>
-    document.getElementById('form-login').addEventListener('submit', (e)=>{
-      const errs=[]; 
-      document.getElementById('err-login-email').textContent='';
-      document.getElementById('err-login-pass').textContent='';
-      const emailRe=/^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      const email=document.getElementById('email').value.trim();
-      const pass=document.getElementById('password').value;
-
-      if(!emailRe.test(email)){ document.getElementById('err-login-email').textContent='Correo inválido.'; errs.push('Correo'); }
-      if(!pass){ document.getElementById('err-login-pass').textContent='Ingresa tu contraseña.'; errs.push('Contraseña'); }
-
-      if(errs.length){ 
-        e.preventDefault(); 
-        const alert=document.getElementById('alert-login'); 
-        alert.classList.remove('d-none'); 
-        alert.textContent='Por favor corrige: '+errs.join(' · ');
-      }
-    });
-  </script>
 </body>
 </html>

@@ -1,0 +1,7 @@
+<!doctype html><html><body>
+<h1>Eliminar {{ object }}</h1>
+<form method="post">{% csrf_token %}
+  <button type="submit">Confirmar</button>
+  <a href="{% url 'cursos_list' %}">Cancelar</a>
+</form>
+</body></html>

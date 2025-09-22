@@ -14,4 +14,10 @@ urlpatterns = [
     path("panel-instructor/", views.panel_instructor, name="panel_instructor"),
     path("perfil/", views.perfil, name="perfil"),
     path("exito/", views.exito, name="exito"),
+    path("cursos/admin/", views.CursoList.as_view(), name="cursos_list"),
+    path("cursos/admin/nuevo/", views.CursoCreate.as_view(), name="cursos_create"),
+    path("cursos/admin/<int:pk>/", views.CursoDetail.as_view(), name="cursos_detail"),
+    path("cursos/admin/<int:pk>/editar/", views.CursoUpdate.as_view(), name="cursos_update"),
+    path("cursos/admin/<int:pk>/eliminar/", views.CursoDelete.as_view(), name="cursos_delete"),
+
 ]

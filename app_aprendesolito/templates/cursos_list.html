@@ -1,0 +1,18 @@
+<!doctype html><html><body>
+<h1>Cursos (admin)</h1>
+<p><a href="{% url 'cursos_create' %}">Nuevo</a></p>
+<table border="1" cellpadding="6">
+<tr><th>Código</th><th>Nombre</th><th>Cupos</th><th>Acciones</th></tr>
+{% for c in object_list %}
+<tr>
+  <td>{{ c.codigo }}</td>
+  <td><a href="{% url 'cursos_detail' c.pk %}">{{ c.nombre }}</a></td>
+  <td>{{ c.cupos }}</td>
+  <td>
+    <a href="{% url 'cursos_update' c.pk %}">Editar</a> |
+    <a href="{% url 'cursos_delete' c.pk %}">Eliminar</a>
+  </td>
+</tr>
+{% empty %}<tr><td colspan="4">Sin cursos</td></tr>{% endfor %}
+</table>
+</body></html>
